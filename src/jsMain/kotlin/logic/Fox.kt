@@ -14,7 +14,7 @@ class Fox(val position: Position, private val direction: Direction, val output: 
                 if (input.length <= inputIndex) Char(0) else input[inputIndex]
 }
 
-fun go(black: Int, colors: Colors, fox: Fox?, board: Board, input: String): Pair<Pair<Int, Colors>, Fox?> {
+fun go(black: Long, colors: Colors, fox: Fox?, board: Board, input: String): Pair<Pair<Long, Colors>, Fox?> {
     if (fox != null) {
         val row = fox.position.row
         val column = fox.position.column

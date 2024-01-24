@@ -9,7 +9,7 @@ import web.html.InputType
 val App = FC<Props> {
     var colors: Colors by useState(
         listOf(
-            Color("red", 2),
+            Color("red", 2L),
             Color("green"),
             Color("blue"),
             Color("purple"),
@@ -28,7 +28,7 @@ val App = FC<Props> {
         )
     )
     var chosenTile by useState(Hack<() -> Tile> { Empty() })
-    var black by useState(0)
+    var black by useState(0L)
     var timerID by useState<Int?>(null)
     var fox by useState<Fox?>(null)
     var input by useState("")
@@ -90,7 +90,7 @@ val App = FC<Props> {
         value = black.toString()
         onInput = {
             try {
-                black = it.target.asDynamic().value.toString().toInt()
+                black = it.target.asDynamic().value.toString().toLong()
             } catch (_: Exception) {
             }
         }

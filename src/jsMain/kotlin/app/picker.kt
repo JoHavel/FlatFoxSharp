@@ -15,11 +15,11 @@ import web.html.InputType
 
 external interface PickerProps : Props {
     var chooseTile: Hack<(() -> Tile) -> Unit>
-    var setColor: Hack<(Int, Int) -> Unit>
+    var setColor: Hack<(Int, Long) -> Unit>
     var colors: Colors
 }
 
-val tiles = listOf<(Int?, Int, Position) -> Tile>(
+val tiles = listOf<(Int?, Long, Position) -> Tile>(
     { colorIndex, _, _ -> if (colorIndex == null) Start else Inc(colorIndex) },
     { colorIndex, _, _ -> if (colorIndex == null) End() else Dec(colorIndex) },
 ) + enumValues<Direction>().map { direction ->
@@ -50,7 +50,7 @@ val drawPicker = FC<PickerProps> { props ->
         tileIndex = -1
     }
 
-    var constValue by useState(0)
+    var constValue by useState(0L)
     var jumpPosition by useState(Position(6 - 1, 42 - 1))
 
     ReactHTML.table {
@@ -69,7 +69,7 @@ val drawPicker = FC<PickerProps> { props ->
                         value = color.value.toString()
                         onInput = {
                             try {
-                                props.setColor.hack(index, it.target.asDynamic().value.toString().toInt())
+                                props.setColor.hack(index, it.target.asDynamic().value.toString().toLong())
                             } catch (_: Exception) {
                             }
                         }
@@ -89,7 +89,7 @@ val drawPicker = FC<PickerProps> { props ->
                                 onInput = {
                                     reset()
                                     try {
-                                        constValue = it.target.asDynamic().value.toString().toInt()
+                                        constValue = it.target.asDynamic().value.toString().toLong()
                                     } catch (_: Exception) {
                                     }
                                 }
