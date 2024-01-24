@@ -29,7 +29,8 @@ val App = FC<Props> {
     )
     var chosenTile by useState(Hack<() -> Tile> { Empty() })
     var black by useState(0L)
-    var timerID by useState<Int?>(null)
+    val (timerID, setTimerID) = useState<Int?>(null)
+    fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
     var fox by useState<Fox?>(null)
     var input by useState("")
 
@@ -53,18 +54,16 @@ val App = FC<Props> {
         reset = DiscardingFunction {
             fox = null
             colors = colors.withLoaded()
+            resetTimer()
         }
         stop = DiscardingFunction {
-            if (timerID != null) {
-                window.clearTimeout(timerID!!)
-                timerID = null
-            }
+            resetTimer()
         }
         autoRun = DiscardingFunction {
             var innerFox = fox
             var innerColors = colors
             var innerBlack = black
-            timerID = window.setInterval({
+            setTimerID(window.setInterval({
                 val (nextValues, nextFox) = go(innerBlack, innerColors, innerFox, board, input)
                 val (nextBlack, nextColors) = nextValues
                 innerBlack = nextBlack
@@ -73,11 +72,8 @@ val App = FC<Props> {
                 black = nextBlack
                 colors = nextColors
                 if (nextFox != null) fox = nextFox
-                if (nextFox == null /*&& timerID != null*/) {
-                    window.clearTimeout(0)
-                    timerID = null
-                }
-            }, 1)
+                else resetTimer()
+            }, 1))
         }
 
         foxOut = fox != null
