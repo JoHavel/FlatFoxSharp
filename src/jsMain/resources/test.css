@@ -1,0 +1,23 @@
+body {
+    overflow-x: scroll;
+}
+
+button {
+    min-width: 3em;
+    min-height: 3em;
+    font-weight: bold;
+}
+
+input {
+    width: 3em;
+}
+
+table {
+    display: inline;
+    margin: 2em;
+}
+
+.menu {
+    /*margin: 2em;*/
+    display: inline;
+}
