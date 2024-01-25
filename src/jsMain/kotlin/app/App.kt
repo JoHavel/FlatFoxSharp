@@ -19,6 +19,8 @@ val App = FC<Props> {
             Color("aqua"),
         )
     )
+    val colorsRef = useRef(colors)
+    colorsRef.current = colors
     var board by useState(
         listOf(
             listOf(Arrow(null, Direction.RIGHT), Start, Arrow(null, Direction.DOWN)),
@@ -27,12 +29,20 @@ val App = FC<Props> {
             listOf(Arrow(null, Direction.UP), Dec(0), Arrow(null, Direction.LEFT)),
         )
     )
+    val boardRef = useRef(board)
+    boardRef.current = board
     var chosenTile by useState(Hack<() -> Tile> { Empty() })
     var black by useState(0L)
+    val blackRef = useRef(black)
+    blackRef.current = black
     val (timerID, setTimerID) = useState<Int?>(null)
     fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
     var fox by useState<Fox?>(null)
+    val foxRef = useRef(fox)
+    foxRef.current = fox
     var input by useState("")
+    val inputRef = useRef(input)
+    inputRef.current = input
 
     drawMenu {
         newRow = DiscardingFunction { board = board + listOf(List(board[0].size) { Empty() }) }
@@ -60,15 +70,15 @@ val App = FC<Props> {
             resetTimer()
         }
         autoRun = DiscardingFunction {
-            var innerFox = fox
-            var innerColors = colors
-            var innerBlack = black
             setTimerID(window.setInterval({
-                val (nextValues, nextFox) = go(innerBlack, innerColors, innerFox, board, input)
+                val (nextValues, nextFox) = go(
+                    blackRef.current!!,
+                    colorsRef.current!!,
+                    foxRef.current,
+                    boardRef.current!!,
+                    inputRef.current!!
+                )
                 val (nextBlack, nextColors) = nextValues
-                innerBlack = nextBlack
-                innerColors = nextColors
-                innerFox = nextFox
                 black = nextBlack
                 colors = nextColors
                 if (nextFox != null) fox = nextFox
