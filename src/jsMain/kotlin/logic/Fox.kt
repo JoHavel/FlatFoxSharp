@@ -14,17 +14,18 @@ class Fox(val position: Position, private val direction: Direction, val output: 
                 if (input.length <= inputIndex) Char(0) else input[inputIndex]
 }
 
-fun go(black: Long, colors: Colors, fox: Fox?, board: Board, input: String): Pair<Pair<Long, Colors>, Fox?> {
-    if (fox != null) {
-        val row = fox.position.row
-        val column = fox.position.column
+fun ProgramState.go(board: Board): Boolean {
+    fox?.also {
+        val row = it.position.row
+        val column = it.position.column
         if (
             0 <= row && row < board.size &&
             0 <= column && column < board[row].size &&
             board[row][column] !is End
         ) {
-            return board[row][column].go(black, colors, fox, input)
+            board[row][column].go(this)
+            return true
         }
     }
-    return black to colors to null
+    return false
 }

@@ -7,7 +7,8 @@ import react.Props
 import react.dom.html.ReactHTML
 
 interface Tile {
-    fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox>
+    fun ProgramState.go()
+    fun go(state: ProgramState) = state.go()
     fun ChildrenBuilder.render(colors: Colors)
 }
 
@@ -19,8 +20,9 @@ external interface TileProps : Props {
 val drawTile = FC<TileProps> { props -> props.tile.run { render(props.colors) } }
 
 open class Empty : Tile {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors to fox.go()
+    override fun ProgramState.go() {
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.render(colors: Colors) {}
 }
@@ -30,8 +32,7 @@ object Start : Empty() {
 }
 
 class End : Tile {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors to fox
+    override fun ProgramState.go() {}
 
     override fun ChildrenBuilder.render(colors: Colors) = +"#"
 }
@@ -49,10 +50,11 @@ abstract class ColoredTile(protected var colorIndex: Int?) : Tile {
 }
 
 class Arrow(colorIndex: Int?, private val direction: Direction) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> {
-        return black to colors to (
-                if ((colorIndex?.let { colors[colorIndex!!].value } ?: 0L) == 0L) fox.go(direction) else fox.go()
-                )
+    override fun ProgramState.go() {
+        fox = if (colorIndex == null || colors[colorIndex!!].value == 0L)
+            fox?.go(direction)
+        else
+            fox?.go()
     }
 
     override fun ChildrenBuilder.coloredRender() {
@@ -61,8 +63,10 @@ class Arrow(colorIndex: Int?, private val direction: Direction) : ColoredTile(co
 }
 
 class Inc(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.inc(colorIndex!!) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.inc(colorIndex!!)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"+"
@@ -70,8 +74,10 @@ class Inc(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Dec(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.dec(colorIndex!!) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.dec(colorIndex!!)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"-"
@@ -79,8 +85,10 @@ class Dec(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Constant(colorIndex: Int, private val value: Long) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.assign(colorIndex!!, value) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.assign(colorIndex!!, value)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +value.toString()
@@ -88,8 +96,10 @@ class Constant(colorIndex: Int, private val value: Long) : ColoredTile(colorInde
 }
 
 class Store(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        colors[colorIndex!!].value to colors to fox.go()
+    override fun ProgramState.go() {
+        black = colors[colorIndex!!].value
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"○"
@@ -97,8 +107,10 @@ class Store(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Plus(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.plus(colorIndex!!, black) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.plus(colorIndex!!, black)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"⊕"
@@ -106,8 +118,10 @@ class Plus(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Minus(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.minus(colorIndex!!, black) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.minus(colorIndex!!, black)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"⊖"
@@ -115,8 +129,10 @@ class Minus(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Times(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.times(colorIndex!!, black) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.times(colorIndex!!, black)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"⊙"
@@ -124,8 +140,10 @@ class Times(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Div(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.div(colorIndex!!, black) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.div(colorIndex!!, black)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"⊘"
@@ -133,8 +151,10 @@ class Div(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Rem(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors.rem(colorIndex!!, black) to fox.go()
+    override fun ProgramState.go() {
+        colors = colors.rem(colorIndex!!, black)
+        fox = fox?.go()
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"%"
@@ -142,9 +162,12 @@ class Rem(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Input(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> {
-        val (nextFox, char) = fox.go(input)
-        return black to colors.assign(colorIndex!!, char.code.toLong()) to nextFox
+    override fun ProgramState.go() {
+        fox?.also {
+            val (nextFox, char) = it.go(input)
+            fox = nextFox
+            colors = colors.assign(colorIndex!!, char.code.toLong())
+        }
     }
 
     override fun ChildrenBuilder.coloredRender() {
@@ -153,8 +176,9 @@ class Input(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Output(colorIndex: Int) : ColoredTile(colorIndex) {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors to fox.go(colors[colorIndex!!].value.toInt().toChar())
+    override fun ProgramState.go() {
+        fox = fox?.go(colors[colorIndex!!].value.toInt().toChar())
+    }
 
     override fun ChildrenBuilder.coloredRender() {
         +"o"
@@ -162,8 +186,9 @@ class Output(colorIndex: Int) : ColoredTile(colorIndex) {
 }
 
 class Jump(private val position: Position) : Tile {
-    override fun go(black: Long, colors: Colors, fox: Fox, input: String): Pair<Pair<Long, Colors>, Fox> =
-        black to colors to fox.go(position)
+    override fun ProgramState.go() {
+        fox = fox?.go(position)
+    }
 
     override fun ChildrenBuilder.render(colors: Colors) {
         +"${position.row + 1}:${position.column + 1}"
