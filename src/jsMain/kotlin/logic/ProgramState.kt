@@ -35,4 +35,16 @@ class ReactProgramState(
     override var black: Long by RefSetter(blackRef, setBlack)
     override val input: String
         get() = inputRef.current!!
+
+    private var lastBlack: Long = black
+
+    fun save() {
+        lastBlack = black
+        colors.save()
+    }
+
+    fun load() {
+        black = lastBlack
+        colors = colors.withLoaded()
+    }
 }

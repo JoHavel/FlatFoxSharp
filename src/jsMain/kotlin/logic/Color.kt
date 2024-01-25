@@ -4,8 +4,11 @@ import app.mapOne
 
 typealias Colors = List<Color>
 
-data class Color(val color: String, val value: Long = 0L, val lastValue: Long = 0L) {
-    fun save(): Color = Color(color, value, value)
+data class Color(val color: String, val value: Long = 0L, var lastValue: Long = 0L) {
+    fun save() {
+        lastValue = value
+    }
+
     fun load(): Color = Color(color, lastValue, lastValue)
     operator fun plus(i: Long) = Color(color, value + i, lastValue)
     operator fun minus(i: Long) = Color(color, value - i, lastValue)
@@ -15,7 +18,7 @@ data class Color(val color: String, val value: Long = 0L, val lastValue: Long = 
     fun assign(i: Long) = Color(color, i, lastValue)
 }
 
-fun Colors.withSaved(): Colors = map { it.save() }
+fun Colors.save() = forEach { it.save() }
 fun Colors.withLoaded(): Colors = map { it.load() }
 fun Colors.inc(index: Int): Colors = mapOne(index) { it + 1L }
 fun Colors.dec(index: Int): Colors = mapOne(index) { it - 1L }

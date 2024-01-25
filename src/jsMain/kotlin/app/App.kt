@@ -67,11 +67,11 @@ val App = FC<Props> {
                 for (column in board[row].indices)
                     if (board[row][column] == Start)
                         fox = getFox(Position(row, column) + Direction.RIGHT)
-            colors = colors.withSaved()
+            state.save()
         }
         reset = DiscardingFunction {
             fox = null
-            colors = colors.withLoaded()
+            state.load()
             resetTimer()
         }
         stop = DiscardingFunction {
