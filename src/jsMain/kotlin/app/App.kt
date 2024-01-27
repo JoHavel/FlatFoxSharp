@@ -121,6 +121,11 @@ val App = FC<Props> {
             else +"Všechny featury"
             onClick = { full = !full }
         }
+        +" "
+        ReactHTML.a {
+            +"Něco nefunguje? Dotaz? Připomínka?"
+            href = "mailto:jonas.havelka@moznabude.cz"
+        }
     }
 
     drawMenu {
