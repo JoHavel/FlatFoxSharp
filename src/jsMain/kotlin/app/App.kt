@@ -1,6 +1,5 @@
 package app
 
-import Hack
 import kotlinx.browser.window
 import react.*
 import react.dom.html.ReactHTML
@@ -39,7 +38,7 @@ val App = FC<Props> {
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
 
-    val (chosenTile, setChosenTile) = useState(Hack<() -> Tile> { Empty() })
+    val (_, setChosenTile, chosenTileRef) = useValueSetRef<Tile, Tile>(Empty())
 
     val (timerID, setTimerID) = useState<Int?>(null)
     fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
@@ -111,7 +110,9 @@ val App = FC<Props> {
     ReactHTML.br()
 
     boardTable(colors, board, fox) { rowI, columnI ->
-        val tile = chosenTile.hack()
+        val tile = chosenTileRef.current!!
+        if (tile == Start)
+            setBoard(board.map { row -> row.map { if (it != Start) it else Empty() } })
         setBoard(board.mapOne(rowI, columnI) { tile })
     }
 
