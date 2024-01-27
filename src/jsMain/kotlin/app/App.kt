@@ -70,6 +70,8 @@ val App = FC<Props> {
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
 
+    var full by useState(false)
+
     ReactHTML.div {
         ReactHTML.button {
             +"Uložit"
@@ -113,6 +115,12 @@ val App = FC<Props> {
                 }
             }
         }
+        +" "
+        ReactHTML.button {
+            if (full) +"Zjednodušená verze"
+            else +"Všechny featury"
+            onClick = { full = !full }
+        }
     }
 
     drawMenu {
@@ -145,36 +153,38 @@ val App = FC<Props> {
         autoRunning = timerID != null
     }
 
-    +"Černý registr (akumulátor)"
-    ReactHTML.input {
-        type = InputType.number
-        value = black.toString()
-        onInput = {
-            try {
-                black = it.target.asDynamic().value.toString().toLong()
-            } catch (_: Exception) {
+    if (full) {
+        +"Černý registr (akumulátor)"
+        ReactHTML.input {
+            type = InputType.number
+            value = black.toString()
+            onInput = {
+                try {
+                    black = it.target.asDynamic().value.toString().toLong()
+                } catch (_: Exception) {
+                }
             }
         }
-    }
 
-    +"Vstup:"
-    ReactHTML.textarea {
+        +"Vstup:"
+        ReactHTML.textarea {
 //        css { width = 10.em; height = 5.em; resize = Resize.both }
 //        type = InputType.text
-        value = input
-        onInput = {
-            try {
-                input = it.target.asDynamic().value.toString()
-            } catch (_: Exception) {
+            value = input
+            onInput = {
+                try {
+                    input = it.target.asDynamic().value.toString()
+                } catch (_: Exception) {
+                }
             }
         }
-    }
 
-    if (fox != null) {
-        +"výstup:"
-        ReactHTML.textarea {
-            disabled = true
-            value = fox!!.output
+        if (fox != null) {
+            +"výstup:"
+            ReactHTML.textarea {
+                disabled = true
+                value = fox!!.output
+            }
         }
     }
 
@@ -196,5 +206,6 @@ val App = FC<Props> {
             colors = colors.assign(colorIndex, value)
         }
         this.colors = colors
+        this.full = full
     }
 }

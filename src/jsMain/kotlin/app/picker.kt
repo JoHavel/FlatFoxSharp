@@ -17,6 +17,7 @@ external interface PickerProps : Props {
     var chooseTile: Hack<(() -> Tile) -> Unit>
     var setColor: Hack<(Int, Long) -> Unit>
     var colors: Colors
+    var full: Boolean
 }
 
 val tiles = listOf<(Int?, Long, Position) -> Tile>(
@@ -79,78 +80,80 @@ val drawPicker = FC<PickerProps> { props ->
         }
 
         tiles.forEachIndexed { tileI, tileGenerator ->
-            ReactHTML.tr {
-                ReactHTML.td {
-                    when (tileI) {
-                        6 -> {
-                            ReactHTML.input {
-                                type = InputType.number
-                                value = constValue
-                                onInput = {
-                                    reset()
-                                    try {
-                                        constValue = it.target.asDynamic().value.toString().toLong()
-                                    } catch (_: Exception) {
+            if (props.full || tileI < 6) {
+                ReactHTML.tr {
+                    ReactHTML.td {
+                        when (tileI) {
+                            6 -> {
+                                ReactHTML.input {
+                                    type = InputType.number
+                                    value = constValue
+                                    onInput = {
+                                        reset()
+                                        try {
+                                            constValue = it.target.asDynamic().value.toString().toLong()
+                                        } catch (_: Exception) {
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        9 -> {
-                            ReactHTML.input {
-                                type = InputType.number
-                                value = jumpPosition.row + 1
-                                onInput = {
-                                    reset()
-                                    try {
-                                        jumpPosition = jumpPosition.assignRow(
-                                            it.target.asDynamic().value.toString().toInt() - 1
-                                        )
-                                    } catch (_: Exception) {
+                            9 -> {
+                                ReactHTML.input {
+                                    type = InputType.number
+                                    value = jumpPosition.row + 1
+                                    onInput = {
+                                        reset()
+                                        try {
+                                            jumpPosition = jumpPosition.assignRow(
+                                                it.target.asDynamic().value.toString().toInt() - 1
+                                            )
+                                        } catch (_: Exception) {
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        10 -> {
-                            ReactHTML.input {
-                                type = InputType.number
-                                value = jumpPosition.column + 1
-                                onInput = {
-                                    reset()
-                                    try {
-                                        jumpPosition = jumpPosition.assignColumn(
-                                            it.target.asDynamic().value.toString().toInt() - 1
-                                        )
-                                    } catch (_: Exception) {
+                            10 -> {
+                                ReactHTML.input {
+                                    type = InputType.number
+                                    value = jumpPosition.column + 1
+                                    onInput = {
+                                        reset()
+                                        try {
+                                            jumpPosition = jumpPosition.assignColumn(
+                                                it.target.asDynamic().value.toString().toInt() - 1
+                                            )
+                                        } catch (_: Exception) {
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        else -> {
-                            ReactHTML.button {
-                                if (color == -1 && tileIndex == tileI) disabled = true
-                                drawTile(tileGenerator(null, constValue, jumpPosition))
-                                onClick = {
-                                    tileIndex = tileI
-                                    color = -1
-                                    props.chooseTile.hack { tileGenerator(null, constValue, jumpPosition) }
+                            else -> {
+                                ReactHTML.button {
+                                    if (color == -1 && tileIndex == tileI) disabled = true
+                                    drawTile(tileGenerator(null, constValue, jumpPosition))
+                                    onClick = {
+                                        tileIndex = tileI
+                                        color = -1
+                                        props.chooseTile.hack { tileGenerator(null, constValue, jumpPosition) }
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                props.colors.indices.forEach { colorIndex ->
-                    ReactHTML.td {
-                        ReactHTML.button {
-                            if (color == colorIndex && tileIndex == tileI) disabled = true
-                            drawTile(tileGenerator(colorIndex, constValue, jumpPosition))
-                            onClick = {
-                                tileIndex = tileI
-                                color = colorIndex
-                                props.chooseTile.hack { tileGenerator(colorIndex, constValue, jumpPosition) }
+                    props.colors.indices.forEach { colorIndex ->
+                        ReactHTML.td {
+                            ReactHTML.button {
+                                if (color == colorIndex && tileIndex == tileI) disabled = true
+                                drawTile(tileGenerator(colorIndex, constValue, jumpPosition))
+                                onClick = {
+                                    tileIndex = tileI
+                                    color = colorIndex
+                                    props.chooseTile.hack { tileGenerator(colorIndex, constValue, jumpPosition) }
+                                }
                             }
                         }
                     }
