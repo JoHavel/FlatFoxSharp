@@ -11,15 +11,14 @@ import web.file.FileReader
 import web.html.InputType
 
 import logic.Board
-import app.Hack
-import app.hack
 import logic.Colors
+import function
 
 private external interface LoadProps : Props {
-    var setColors: Hack<(Colors) -> Unit>
-    var setBoard: Hack<(Board) -> Unit>
-    var setBlack: Hack<(Long) -> Unit>
-    var setInput: Hack<(String) -> Unit>
+    var setColors: (Colors) -> Unit
+    var setBoard: (Board) -> Unit
+    var setBlack: (Long) -> Unit
+    var setInput: (String) -> Unit
 }
 
 private val loadButton_ = FC<LoadProps> { props ->
@@ -42,10 +41,10 @@ private val loadButton_ = FC<LoadProps> { props ->
                     println(event.target)
                     try {
                         val (colors, board, black, input) = load(reader.result as String)
-                        props.setColors.hack(colors)
-                        props.setBoard.hack(board)
-                        props.setBlack.hack(black)
-                        props.setInput.hack(input)
+                        props.setColors(colors)
+                        props.setBoard(board)
+                        props.setBlack(black)
+                        props.setInput(input)
                     } catch (_: ParseException) {
                     }
                 }
@@ -57,10 +56,10 @@ private val loadButton_ = FC<LoadProps> { props ->
 }
 
 fun ChildrenBuilder.loadButton(
-    setColors: Hack<(Colors) -> Unit>,
-    setBoard: Hack<(Board) -> Unit>,
-    setBlack: Hack<(Long) -> Unit>,
-    setInput: Hack<(String) -> Unit>,
+    setColors: (Colors) -> Unit,
+    setBoard: (Board) -> Unit,
+    setBlack: (Long) -> Unit,
+    setInput: (String) -> Unit,
 ) = loadButton_ {
     this.setColors = setColors
     this.setBoard = setBoard
@@ -73,4 +72,4 @@ fun ChildrenBuilder.loadButton(
     setBoard: StateSetter<Board>,
     setBlack: StateSetter<Long>,
     setInput: StateSetter<String>,
-) = loadButton(setColors.hack, setBoard.hack, setBlack.hack, setInput.hack)
+) = loadButton(setColors.function, setBoard.function, setBlack.function, setInput.function)

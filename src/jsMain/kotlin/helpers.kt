@@ -1,5 +1,3 @@
-package app
-
 import react.StateSetter
 
 
@@ -15,3 +13,6 @@ data class Hack<T>(val hack: T)
 
 val <T> StateSetter<T>.hack
     get() = Hack { it: T -> this(it) }
+
+val <T> StateSetter<T>.function
+    get() = { it: T -> this(it) }

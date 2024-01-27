@@ -1,5 +1,6 @@
 package app
 
+import Hack
 import kotlinx.browser.window
 import react.*
 import react.dom.html.ReactHTML
@@ -10,6 +11,7 @@ import logic.Direction
 import logic.Position
 import file.loadButton
 import file.saveButton
+import mapOne
 
 
 val DEFAULT_COLORS = listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
@@ -115,8 +117,8 @@ val App = FC<Props> {
 
     picker(
         setChosenTile,
-        Hack { colorIndex, value -> setColors(colors.assign(colorIndex, value)) },
-        Hack { colorIndex, name -> setColors(colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) }) },
+        { colorIndex, value -> setColors(colors.assign(colorIndex, value)) },
+        { colorIndex, name -> setColors(colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) }) },
         colors, black, setBlack,
         full,
     )

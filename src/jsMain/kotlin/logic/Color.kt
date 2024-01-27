@@ -1,6 +1,6 @@
 package logic
 
-import app.mapOne
+import mapOne
 
 typealias Colors = List<Color>
 

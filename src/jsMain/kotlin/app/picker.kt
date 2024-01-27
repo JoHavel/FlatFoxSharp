@@ -1,5 +1,8 @@
 package app
 
+import Hack
+import function
+import hack
 import react.*
 import react.dom.html.ReactHTML
 import web.html.InputType
@@ -13,11 +16,11 @@ import logic.*
 
 private external interface PickerProps : Props {
     var chooseTile: Hack<(Hack<() -> Tile>) -> Unit>
-    var setColor: Hack<(Int, Long) -> Unit>
-    var setColorName: Hack<(Int, String) -> Unit>
+    var setColor: (Int, Long) -> Unit
+    var setColorName: (Int, String) -> Unit
     var colors: Colors
     var black: Long
-    var setBlack: Hack<(Long) -> Unit>
+    var setBlack: (Long) -> Unit
     var full: Boolean
 }
 
@@ -69,7 +72,7 @@ private val picker_ = FC<PickerProps> { props ->
                             type = InputType.text
                             value = color.color
                             onInput = {
-                                props.setColorName.hack(index, it.target.asDynamic().value.toString())
+                                props.setColorName(index, it.target.asDynamic().value.toString())
                             }
                         }
                     }
@@ -83,7 +86,7 @@ private val picker_ = FC<PickerProps> { props ->
                         value = props.black.toString()
                         onInput = {
                             try {
-                                props.setBlack.hack(it.target.asDynamic().value.toString().toLong())
+                                props.setBlack(it.target.asDynamic().value.toString().toLong())
                             } catch (_: Exception) {
                             }
                         }
@@ -102,7 +105,7 @@ private val picker_ = FC<PickerProps> { props ->
                         value = color.value.toString()
                         onInput = {
                             try {
-                                props.setColor.hack(index, it.target.asDynamic().value.toString().toLong())
+                                props.setColor(index, it.target.asDynamic().value.toString().toLong())
                             } catch (_: Exception) {
                             }
                         }
@@ -197,11 +200,11 @@ private val picker_ = FC<PickerProps> { props ->
 
 fun ChildrenBuilder.picker(
     chooseTile: Hack<(Hack<() -> Tile>) -> Unit>,
-    setColor: Hack<(Int, Long) -> Unit>,
-    setColorName: Hack<(Int, String) -> Unit>,
+    setColor: (Int, Long) -> Unit,
+    setColorName: (Int, String) -> Unit,
     colors: Colors,
     black: Long,
-    setBlack: Hack<(Long) -> Unit>,
+    setBlack: (Long) -> Unit,
     full: Boolean,
 ) = picker_ {
     this.chooseTile = chooseTile
@@ -215,8 +218,8 @@ fun ChildrenBuilder.picker(
 
 fun ChildrenBuilder.picker(
     chooseTile: StateSetter<Hack<() -> Tile>>,
-    setColor: Hack<(Int, Long) -> Unit>,
-    setColorName: Hack<(Int, String) -> Unit>,
+    setColor: (Int, Long) -> Unit,
+    setColorName: (Int, String) -> Unit,
     colors: Colors,
     black: Long,
     setBlack: StateSetter<Long>,
@@ -227,6 +230,6 @@ fun ChildrenBuilder.picker(
     setColorName,
     colors,
     black,
-    setBlack.hack,
+    setBlack.function,
     full,
 )
