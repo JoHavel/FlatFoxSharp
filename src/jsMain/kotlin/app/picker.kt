@@ -16,8 +16,11 @@ import web.html.InputType
 external interface PickerProps : Props {
     var chooseTile: Hack<(() -> Tile) -> Unit>
     var setColor: Hack<(Int, Long) -> Unit>
+    var setColorName: Hack<(Int, String) -> Unit>
     var colors: Colors
     var full: Boolean
+    var black: Long
+    var setBlack: Hack<(Long) -> Unit>
 }
 
 val tiles = listOf<(Int?, Long, Position) -> Tile>(
@@ -55,13 +58,44 @@ val drawPicker = FC<PickerProps> { props ->
     var jumpPosition by useState(Position(6 - 1, 42 - 1))
 
     ReactHTML.table {
-        ReactHTML.tr {
-            ReactHTML.td {
+        if (props.full)
+            ReactHTML.tr {
                 ReactHTML.button {
                     if (color == -1 && tileIndex == -1) disabled = true
                     drawTile(Empty())
                     onClick = { reset() }
                 }
+                props.colors.forEachIndexed { index, color ->
+                    ReactHTML.td {
+                        ReactHTML.input {
+                            type = InputType.text
+                            value = color.color
+                            onInput = {
+                                props.setColorName.hack(index, it.target.asDynamic().value.toString())
+                            }
+                        }
+                    }
+                }
+            }
+        ReactHTML.tr {
+            ReactHTML.td {
+                if (props.full)
+                    ReactHTML.input {
+                        type = InputType.number
+                        value = props.black.toString()
+                        onInput = {
+                            try {
+                                props.setBlack.hack(it.target.asDynamic().value.toString().toLong())
+                            } catch (_: Exception) {
+                            }
+                        }
+                    }
+                else
+                    ReactHTML.button {
+                        if (color == -1 && tileIndex == -1) disabled = true
+                        drawTile(Empty())
+                        onClick = { reset() }
+                    }
             }
             props.colors.forEachIndexed { index, color ->
                 ReactHTML.td {

@@ -18,48 +18,41 @@ import org.w3c.files.File
 import web.cssom.*
 import web.file.FileReader
 
-val App = FC<Props> {
-    val colorsState = useState(
-        listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
-    )
-    var colors: Colors by colorsState
-    val (_, setColors) = colorsState
-    val colorsRef = useRef(colors)
-    colorsRef.current = colors
+val DEFAULT_COLORS = listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
+val DEFAULT_BOARD = listOf(
+    listOf(Arrow(null, Direction.RIGHT), Start, Arrow(null, Direction.DOWN)),
+    listOf(Empty(), Empty(), Inc(1)),
+    listOf(Arrow(0, Direction.RIGHT), End(), Inc(1)),
+    listOf(Arrow(null, Direction.UP), Dec(0), Arrow(null, Direction.LEFT)),
+)
 
-    var board by useState(
-        listOf(
-            listOf(Arrow(null, Direction.RIGHT), Start, Arrow(null, Direction.DOWN)),
-            listOf(Empty(), Empty(), Inc(1)),
-            listOf(Arrow(0, Direction.RIGHT), End(), Inc(1)),
-            listOf(Arrow(null, Direction.UP), Dec(0), Arrow(null, Direction.LEFT)),
-        )
-    )
-    val boardRef = useRef(board)
-    boardRef.current = board
+fun <T : Any, S : T?> useStateSetRef(default: S): Triple<StateInstance<S>, StateSetter<S>, RefObject<T>> {
+    val state = useState(default)
+    val (value, setter) = state
+    val ref = useRef<T>(null)
+    ref.current = value
+    return Triple(state, setter, ref)
+}
+
+val App = FC<Props> {
+    val (colorState, setColors, colorsRef) = useStateSetRef(DEFAULT_COLORS)
+    val (boardState, _, boardRef) = useStateSetRef(DEFAULT_BOARD)
+    val (blackState, setBlack, blackRef) = useStateSetRef(0L)
+    val (foxState, setFox, foxRef) = useStateSetRef<Fox, Fox?>(null)
+    val (inputState, _, inputRef) = useStateSetRef("")
+
+    val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
+
+    var colors by colorState
+    var board by boardState
+    var black by blackState
+    var fox by foxState
+    var input by inputState
 
     var chosenTile by useState(Hack<() -> Tile> { Empty() })
 
-    val blackState = useState(0L)
-    var black by blackState
-    val (_, setBlack) = blackState
-    val blackRef = useRef(black)
-    blackRef.current = black
-
     val (timerID, setTimerID) = useState<Int?>(null)
     fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
-
-    val foxState = useState<Fox?>(null)
-    var fox by foxState
-    val (_, setFox) = foxState
-    val foxRef = useRef(fox)
-    foxRef.current = fox
-
-    var input by useState("")
-    val inputRef = useRef(input)
-    inputRef.current = input
-
-    val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
 
     var full by useState(false)
 
@@ -151,18 +144,6 @@ val App = FC<Props> {
     }
 
     if (full) {
-        +"Černý registr (akumulátor)"
-        ReactHTML.input {
-            type = InputType.number
-            value = black.toString()
-            onInput = {
-                try {
-                    black = it.target.asDynamic().value.toString().toLong()
-                } catch (_: Exception) {
-                }
-            }
-        }
-
         +"Vstup:"
         ReactHTML.textarea {
 //        css { width = 10.em; height = 5.em; resize = Resize.both }
@@ -202,7 +183,12 @@ val App = FC<Props> {
         setColor = Hack { colorIndex, value ->
             colors = colors.assign(colorIndex, value)
         }
+        setColorName = Hack { colorIndex, name ->
+            colors = colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) }
+        }
         this.colors = colors
         this.full = full
+        this.black = black
+        this.setBlack = Hack { black = it }
     }
 }
