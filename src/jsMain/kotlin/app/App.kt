@@ -111,9 +111,15 @@ val App = FC<Props> {
 
     boardTable(colors, board, fox) { rowI, columnI ->
         val tile = chosenTileRef.current!!
-        if (tile == Start)
-            setBoard(board.map { row -> row.map { if (it != Start) it else Empty() } })
-        setBoard(board.mapOne(rowI, columnI) { tile })
+        if (tile == Start) {
+            setBoard(board.mapIndexed { rowIndex, row ->
+                row.mapIndexed { columnIndex, it ->
+                    if (rowIndex == rowI && columnIndex == columnI) Start
+                    else if (it != Start) it
+                    else Empty()
+                }
+            })
+        } else setBoard(board.mapOne(rowI, columnI) { tile })
     }
 
     picker(
