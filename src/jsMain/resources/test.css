@@ -1,11 +1,23 @@
 body {
-    overflow-x: scroll;
+    font-family: 'OpenSans', serif;
+    background-color: #fffbf6;
 }
 
 button {
-    min-width: 3em;
-    min-height: 3em;
+    cursor: pointer;
+}
+
+table button {
+    min-width: 4em;
+    min-height: 4em;
     font-weight: bold;
+    background-color: #fffbf6;
+}
+
+table button:disabled, table button[disabled] {
+    color: black;
+    cursor: default;
+    background-color: #f9d59e;
 }
 
 input {
@@ -13,11 +25,59 @@ input {
 }
 
 table {
-    display: inline;
-    margin: 2em;
+    width: 50%;
+    display: inline-block;
+    overflow-x: scroll;
+    padding: 1em;
+    vertical-align: top;
 }
 
-.menu {
-    /*margin: 2em;*/
-    display: inline;
+
+/* M&M */
+.menu>button {
+    margin: 5px 3px;
+    padding: 2px;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #f9d59e;
+    color: #333;
+    font-size: 100%;
+    font-weight: bold;
+    font-variant: small-caps;
+    font-family: 'OpenSans', serif;
+    filter: drop-shadow(0px 5px 5px rgba(0, 0, 0, 0.4));
+    width: 16%;
+}
+
+.load {
+    border: 2px solid #f9d59e;
+    vertical-align: middle;
+    padding: 2px;
+    color: #333;
+}
+.load label {
+    margin: 2px;
+}
+
+label {
+    font-weight: bold;
+    /*vertical-align: middle;*/
+    margin: 15px;
+    color: #333;
+}
+
+textarea {
+    vertical-align: middle;
+}
+
+.menu>button:hover {
+    position: relative;
+    top: 2px;
+    left: 2px;
+    background-color: #df490e;
+}
+
+a {
+    color: #6f2509;
+    font-size: 100%;
 }

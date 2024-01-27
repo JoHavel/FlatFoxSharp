@@ -23,10 +23,7 @@ private external interface LoadProps : Props {
 
 private val loadButton_ = FC<LoadProps> { props ->
     ReactHTML.span {
-        css {
-            border = Border(2.pt, LineStyle.solid, Color("lightgray"))
-            padding = 5.pt
-        }
+        className = ClassName("load")
         ReactHTML.label {
             css { fontWeight = FontWeight.bold }
             +"Načíst:"

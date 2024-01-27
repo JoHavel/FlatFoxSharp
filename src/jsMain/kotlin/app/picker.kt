@@ -48,135 +48,137 @@ private val picker_ = FC<PickerProps> { props ->
     var jumpPosition by useState(Position(6 - 1, 42 - 1))
 
     ReactHTML.table {
-        if (props.full)
-            ReactHTML.tr {
-                ReactHTML.button {
-                    if (color == -1 && tileIndex == -1) disabled = true
-                    tileDraw(Empty(), props.colors)
-                    onClick = { reset() }
-                }
-                props.colors.forEachIndexed { index, color ->
-                    ReactHTML.td {
-                        ReactHTML.input {
-                            type = InputType.text
-                            value = color.color
-                            onInput = {
-                                props.setColorName(index, it.target.asDynamic().value.toString())
-                            }
-                        }
-                    }
-                }
-            }
-        ReactHTML.tr {
-            ReactHTML.td {
-                if (props.full)
-                    ReactHTML.input {
-                        type = InputType.number
-                        value = props.black.toString()
-                        onInput = {
-                            try {
-                                props.setBlack(it.target.asDynamic().value.toString().toLong())
-                            } catch (_: Exception) {
-                            }
-                        }
-                    }
-                else
+        ReactHTML.tbody {
+            if (props.full)
+                ReactHTML.tr {
                     ReactHTML.button {
                         if (color == -1 && tileIndex == -1) disabled = true
                         tileDraw(Empty(), props.colors)
                         onClick = { reset() }
                     }
-            }
-            props.colors.forEachIndexed { index, color ->
+                    props.colors.forEachIndexed { index, color ->
+                        ReactHTML.td {
+                            ReactHTML.input {
+                                type = InputType.text
+                                value = color.color
+                                onInput = {
+                                    props.setColorName(index, it.target.asDynamic().value.toString())
+                                }
+                            }
+                        }
+                    }
+                }
+            ReactHTML.tr {
                 ReactHTML.td {
-                    ReactHTML.input {
-                        type = InputType.number
-                        value = color.value.toString()
-                        onInput = {
-                            try {
-                                props.setColor(index, it.target.asDynamic().value.toString().toLong())
-                            } catch (_: Exception) {
+                    if (props.full)
+                        ReactHTML.input {
+                            type = InputType.number
+                            value = props.black.toString()
+                            onInput = {
+                                try {
+                                    props.setBlack(it.target.asDynamic().value.toString().toLong())
+                                } catch (_: Exception) {
+                                }
+                            }
+                        }
+                    else
+                        ReactHTML.button {
+                            if (color == -1 && tileIndex == -1) disabled = true
+                            tileDraw(Empty(), props.colors)
+                            onClick = { reset() }
+                        }
+                }
+                props.colors.forEachIndexed { index, color ->
+                    ReactHTML.td {
+                        ReactHTML.input {
+                            type = InputType.number
+                            value = color.value.toString()
+                            onInput = {
+                                try {
+                                    props.setColor(index, it.target.asDynamic().value.toString().toLong())
+                                } catch (_: Exception) {
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        tiles.forEachIndexed { tileI, tileGenerator ->
-            if (props.full || tileI < 6) {
-                ReactHTML.tr {
-                    ReactHTML.td {
-                        when (tileI) {
-                            6 -> {
-                                ReactHTML.input {
-                                    type = InputType.number
-                                    value = constValue
-                                    onInput = {
-                                        reset()
-                                        try {
-                                            constValue = it.target.asDynamic().value.toString().toLong()
-                                        } catch (_: Exception) {
+            tiles.forEachIndexed { tileI, tileGenerator ->
+                if (props.full || tileI < 6) {
+                    ReactHTML.tr {
+                        ReactHTML.td {
+                            when (tileI) {
+                                6 -> {
+                                    ReactHTML.input {
+                                        type = InputType.number
+                                        value = constValue
+                                        onInput = {
+                                            reset()
+                                            try {
+                                                constValue = it.target.asDynamic().value.toString().toLong()
+                                            } catch (_: Exception) {
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            9 -> {
-                                ReactHTML.input {
-                                    type = InputType.number
-                                    value = jumpPosition.row + 1
-                                    onInput = {
-                                        reset()
-                                        try {
-                                            jumpPosition = jumpPosition.assignRow(
-                                                it.target.asDynamic().value.toString().toInt() - 1
-                                            )
-                                        } catch (_: Exception) {
+                                9 -> {
+                                    ReactHTML.input {
+                                        type = InputType.number
+                                        value = jumpPosition.row + 1
+                                        onInput = {
+                                            reset()
+                                            try {
+                                                jumpPosition = jumpPosition.assignRow(
+                                                    it.target.asDynamic().value.toString().toInt() - 1
+                                                )
+                                            } catch (_: Exception) {
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            10 -> {
-                                ReactHTML.input {
-                                    type = InputType.number
-                                    value = jumpPosition.column + 1
-                                    onInput = {
-                                        reset()
-                                        try {
-                                            jumpPosition = jumpPosition.assignColumn(
-                                                it.target.asDynamic().value.toString().toInt() - 1
-                                            )
-                                        } catch (_: Exception) {
+                                10 -> {
+                                    ReactHTML.input {
+                                        type = InputType.number
+                                        value = jumpPosition.column + 1
+                                        onInput = {
+                                            reset()
+                                            try {
+                                                jumpPosition = jumpPosition.assignColumn(
+                                                    it.target.asDynamic().value.toString().toInt() - 1
+                                                )
+                                            } catch (_: Exception) {
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            else -> {
-                                ReactHTML.button {
-                                    if (color == -1 && tileIndex == tileI) disabled = true
-                                    tileDraw(tileGenerator(null, constValue, jumpPosition), props.colors)
-                                    onClick = {
-                                        tileIndex = tileI
-                                        color = -1
-                                        props.chooseTile(tileGenerator(null, constValue, jumpPosition))
+                                else -> {
+                                    ReactHTML.button {
+                                        if (color == -1 && tileIndex == tileI) disabled = true
+                                        tileDraw(tileGenerator(null, constValue, jumpPosition), props.colors)
+                                        onClick = {
+                                            tileIndex = tileI
+                                            color = -1
+                                            props.chooseTile(tileGenerator(null, constValue, jumpPosition))
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    props.colors.indices.forEach { colorIndex ->
-                        ReactHTML.td {
-                            ReactHTML.button {
-                                if (color == colorIndex && tileIndex == tileI) disabled = true
-                                tileDraw(tileGenerator(colorIndex, constValue, jumpPosition), props.colors)
-                                onClick = {
-                                    tileIndex = tileI
-                                    color = colorIndex
-                                    props.chooseTile(tileGenerator(colorIndex, constValue, jumpPosition))
+                        props.colors.indices.forEach { colorIndex ->
+                            ReactHTML.td {
+                                ReactHTML.button {
+                                    if (color == colorIndex && tileIndex == tileI) disabled = true
+                                    tileDraw(tileGenerator(colorIndex, constValue, jumpPosition), props.colors)
+                                    onClick = {
+                                        tileIndex = tileI
+                                        color = colorIndex
+                                        props.chooseTile(tileGenerator(colorIndex, constValue, jumpPosition))
+                                    }
                                 }
                             }
                         }

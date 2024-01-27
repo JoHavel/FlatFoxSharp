@@ -10,6 +10,7 @@ import logic.Direction
 import file.loadButton
 import file.saveButton
 import mapOne
+import web.cssom.ClassName
 
 
 val DEFAULT_COLORS = listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
@@ -45,15 +46,13 @@ val App = FC<Props> {
     var full by useState(false)
 
     ReactHTML.div {
+        className = ClassName("menu")
         saveButton(colors, board, black, input)
-        +" "
         loadButton(setColors, setBoard, setBlack, setInput)
-        +" "
         ReactHTML.button {
             if (full) +"Zjednodušená verze" else +"Všechny featury"
             onClick = { full = !full }
         }
-        +" "
         ReactHTML.a {
             +"Něco nefunguje? Dotaz? Připomínka?"
             href = "mailto:jonas.havelka@moznabude.cz"
@@ -86,7 +85,7 @@ val App = FC<Props> {
     )
 
     if (full) {
-        +"Vstup:"
+        ReactHTML.label { +"Vstup:" }
         ReactHTML.textarea {
 //        css { width = 10.em; height = 5.em; resize = Resize.both }
 //        type = InputType.text
@@ -95,7 +94,7 @@ val App = FC<Props> {
         }
 
         if (fox != null) {
-            +"výstup:"
+            ReactHTML.label { +"Výstup:" }
             ReactHTML.textarea {
                 disabled = true
                 value = fox.output
