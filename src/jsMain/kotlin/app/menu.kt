@@ -9,6 +9,7 @@ import web.cssom.ClassName
 external interface MenuProps : Props {
     var newRow: DiscardingFunction
     var newColumn: DiscardingFunction
+    var newColor: DiscardingFunction
     var start: DiscardingFunction
     var step: DiscardingFunction
     var reset: DiscardingFunction
@@ -30,6 +31,11 @@ val drawMenu = FC<MenuProps>("Menu") { props ->
         ReactHTML.button {
             +"Přidej sloupec"
             onClick = props.newColumn.hack
+        }
+
+        ReactHTML.button {
+            +"Přidej barvu"
+            onClick = props.newColor.hack
         }
 
         ReactHTML.button {

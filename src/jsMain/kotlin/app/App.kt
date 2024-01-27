@@ -20,16 +20,7 @@ import web.file.FileReader
 
 val App = FC<Props> {
     val colorsState = useState(
-        listOf(
-            Color("red", 2L),
-            Color("green"),
-            Color("blue"),
-            Color("purple"),
-            Color("orange"),
-            Color("violet"),
-            Color("brown"),
-            Color("aqua"),
-        )
+        listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
     )
     var colors: Colors by colorsState
     val (_, setColors) = colorsState
@@ -131,6 +122,7 @@ val App = FC<Props> {
     drawMenu {
         newRow = DiscardingFunction { board = board + listOf(List(board[0].size) { Empty() }) }
         newColumn = DiscardingFunction { board = board.map { row -> row + Empty() } }
+        newColor = DiscardingFunction { colors = colors + Color(getDefaultColorName(colors.size)) }
         step = DiscardingFunction { state.go(board) }
         start = DiscardingFunction {
             for (row in board.indices)
