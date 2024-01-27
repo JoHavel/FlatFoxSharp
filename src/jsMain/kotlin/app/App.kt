@@ -7,7 +7,6 @@ import react.dom.html.ReactHTML
 import logic.*
 import logic.Color
 import logic.Direction
-import logic.Position
 import file.loadButton
 import file.saveButton
 import mapOne
@@ -66,10 +65,7 @@ val App = FC<Props> {
         newColumn = { setBoard(Board::withNewColumn) },
         newColor = { setColors(colors + Color(getDefaultColorName(colors.size))) },
         start = {
-            for (row in board.indices)
-                for (column in board[row].indices)
-                    if (board[row][column] == Start)
-                        setFox(getFox(Position(row, column) + Direction.RIGHT))
+            board.findStart()?.also { setFox(getFox(it + Direction.RIGHT)) }
             state.save()
         },
         step = { state.go(board) },

@@ -35,8 +35,8 @@ data class Color(val color: String, val value: Long = 0L, var lastValue: Long = 
     fun assign(i: Long) = Color(color, i, lastValue)
 }
 
-fun Colors.save() = forEach { it.save() }
-fun Colors.withLoaded(): Colors = map { it.load() }
+fun Colors.save() = forEach(Color::save)
+fun Colors.withLoaded(): Colors = map(Color::load)
 fun Colors.inc(index: Int): Colors = mapOne(index) { it + 1L }
 fun Colors.dec(index: Int): Colors = mapOne(index) { it - 1L }
 fun Colors.plus(index: Int, value: Long): Colors = mapOne(index) { it + value }
