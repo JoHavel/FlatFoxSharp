@@ -1,10 +1,17 @@
 package app
 
+import file.ParseException
+import file.load
+import file.save
 import kotlinx.browser.window
 import logic.*
 import react.*
 import react.dom.html.ReactHTML
 import web.html.InputType
+import org.w3c.dom.url.URL
+import org.w3c.files.FilePropertyBag
+import org.w3c.files.File
+import web.file.FileReader
 
 val App = FC<Props> {
     val colorsState = useState(
@@ -57,6 +64,36 @@ val App = FC<Props> {
     inputRef.current = input
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
+
+    ReactHTML.button {
+        onClick = {
+            val file = save(colors, board, black, input)
+            val blob = File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "text/ffs"))
+            val url = URL.createObjectURL(blob)
+            window.setTimeout({ URL.revokeObjectURL(url) }, 60000)
+            window.open(url)
+        }
+    }
+
+    ReactHTML.input {
+        type = InputType.file
+        onChange = {
+            val reader = FileReader()
+            reader.onload = { event ->
+                println(event.target)
+                try {
+                    val (newColors, newBoard, newBlack, newInput) = load(reader.result as String)
+                    colors = newColors
+                    board = newBoard
+                    black = newBlack
+                    input = newInput
+                } catch (_: ParseException) {
+                }
+            }
+            if (it.target.files != null)
+                reader.readAsText(it.target.files!![0])
+        }
+    }
 
     drawMenu {
         newRow = DiscardingFunction { board = board + listOf(List(board[0].size) { Empty() }) }

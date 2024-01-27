@@ -7,6 +7,11 @@ enum class Direction(val drow: Int, val dcolumn: Int, val string: String) {
     RIGHT(0, 1, ">");
 }
 
+fun string2Direction(str: String): Direction? {
+    for (direction in enumValues<Direction>()) if (direction.string == str) return direction
+    return null
+}
+
 data class Position(val row: Int, val column: Int) {
     operator fun plus(direction: Direction) = Position(row + direction.drow, column + direction.dcolumn)
     fun assignRow(row: Int) = Position(row, column)

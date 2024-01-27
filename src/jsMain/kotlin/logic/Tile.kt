@@ -10,6 +10,7 @@ interface Tile {
     fun ProgramState.go()
     fun go(state: ProgramState) = state.go()
     fun ChildrenBuilder.render(colors: Colors)
+    override fun toString(): String
 }
 
 external interface TileProps : Props {
@@ -25,16 +26,19 @@ open class Empty : Tile {
     }
 
     override fun ChildrenBuilder.render(colors: Colors) {}
+    override fun toString(): String = ""
 }
 
 object Start : Empty() {
     override fun ChildrenBuilder.render(colors: Colors) = +"@"
+    override fun toString(): String = "@"
 }
 
 class End : Tile {
     override fun ProgramState.go() {}
 
     override fun ChildrenBuilder.render(colors: Colors) = +"#"
+    override fun toString(): String = "#"
 }
 
 abstract class ColoredTile(protected var colorIndex: Int?) : Tile {
@@ -60,6 +64,8 @@ class Arrow(colorIndex: Int?, private val direction: Direction) : ColoredTile(co
     override fun ChildrenBuilder.coloredRender() {
         +direction.string
     }
+
+    override fun toString(): String = direction.string + (colorIndex?.toString() ?: "")
 }
 
 class Inc(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -71,6 +77,8 @@ class Inc(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"+"
     }
+
+    override fun toString(): String = "+${colorIndex}"
 }
 
 class Dec(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -82,6 +90,8 @@ class Dec(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"-"
     }
+
+    override fun toString(): String = "-${colorIndex}"
 }
 
 class Constant(colorIndex: Int, private val value: Long) : ColoredTile(colorIndex) {
@@ -93,6 +103,8 @@ class Constant(colorIndex: Int, private val value: Long) : ColoredTile(colorInde
     override fun ChildrenBuilder.coloredRender() {
         +value.toString()
     }
+
+    override fun toString(): String = "${colorIndex}=${value}"
 }
 
 class Store(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -104,6 +116,8 @@ class Store(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"○"
     }
+
+    override fun toString(): String = "O${colorIndex}"
 }
 
 class Plus(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -115,6 +129,8 @@ class Plus(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"⊕"
     }
+
+    override fun toString(): String = "+O${colorIndex}"
 }
 
 class Minus(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -126,6 +142,8 @@ class Minus(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"⊖"
     }
+
+    override fun toString(): String = "-O${colorIndex}"
 }
 
 class Times(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -137,6 +155,8 @@ class Times(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"⊙"
     }
+
+    override fun toString(): String = ".O${colorIndex}"
 }
 
 class Div(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -148,6 +168,8 @@ class Div(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"⊘"
     }
+
+    override fun toString(): String = "/O${colorIndex}"
 }
 
 class Rem(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -159,6 +181,8 @@ class Rem(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"%"
     }
+
+    override fun toString(): String = "%O${colorIndex}"
 }
 
 class Input(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -173,6 +197,8 @@ class Input(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"i"
     }
+
+    override fun toString(): String = "i${colorIndex}"
 }
 
 class Output(colorIndex: Int) : ColoredTile(colorIndex) {
@@ -183,6 +209,8 @@ class Output(colorIndex: Int) : ColoredTile(colorIndex) {
     override fun ChildrenBuilder.coloredRender() {
         +"o"
     }
+
+    override fun toString(): String = "o${colorIndex}"
 }
 
 class Jump(private val position: Position) : Tile {
@@ -193,4 +221,6 @@ class Jump(private val position: Position) : Tile {
     override fun ChildrenBuilder.render(colors: Colors) {
         +"${position.row + 1}:${position.column + 1}"
     }
+
+    override fun toString(): String = "${position.row + 1}:${position.column + 1}"
 }
