@@ -2,8 +2,6 @@ package logic
 
 import emotion.react.css
 import react.ChildrenBuilder
-import react.FC
-import react.Props
 import react.dom.html.ReactHTML
 
 interface Tile {
@@ -12,13 +10,6 @@ interface Tile {
     fun ChildrenBuilder.render(colors: Colors)
     override fun toString(): String
 }
-
-external interface TileProps : Props {
-    var tile: Tile
-    var colors: Colors
-}
-
-val drawTile = FC<TileProps> { props -> props.tile.run { render(props.colors) } }
 
 open class Empty : Tile {
     override fun ProgramState.go() {

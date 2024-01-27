@@ -35,10 +35,6 @@ private val tiles = listOf<(Int?, Long, Position) -> Tile>(
 )
 
 private val picker_ = FC<PickerProps> { props ->
-    fun ChildrenBuilder.drawTile(tile: Tile) {
-        drawTile { this.tile = tile; colors = props.colors }
-    }
-
     var color by useState(-1)
     var tileIndex by useState(-1)
 
@@ -56,7 +52,7 @@ private val picker_ = FC<PickerProps> { props ->
             ReactHTML.tr {
                 ReactHTML.button {
                     if (color == -1 && tileIndex == -1) disabled = true
-                    drawTile(Empty())
+                    tileDraw(Empty(), props.colors)
                     onClick = { reset() }
                 }
                 props.colors.forEachIndexed { index, color ->
@@ -87,7 +83,7 @@ private val picker_ = FC<PickerProps> { props ->
                 else
                     ReactHTML.button {
                         if (color == -1 && tileIndex == -1) disabled = true
-                        drawTile(Empty())
+                        tileDraw(Empty(), props.colors)
                         onClick = { reset() }
                     }
             }
@@ -161,7 +157,7 @@ private val picker_ = FC<PickerProps> { props ->
                             else -> {
                                 ReactHTML.button {
                                     if (color == -1 && tileIndex == tileI) disabled = true
-                                    drawTile(tileGenerator(null, constValue, jumpPosition))
+                                    tileDraw(tileGenerator(null, constValue, jumpPosition), props.colors)
                                     onClick = {
                                         tileIndex = tileI
                                         color = -1
@@ -176,7 +172,7 @@ private val picker_ = FC<PickerProps> { props ->
                         ReactHTML.td {
                             ReactHTML.button {
                                 if (color == colorIndex && tileIndex == tileI) disabled = true
-                                drawTile(tileGenerator(colorIndex, constValue, jumpPosition))
+                                tileDraw(tileGenerator(colorIndex, constValue, jumpPosition), props.colors)
                                 onClick = {
                                     tileIndex = tileI
                                     color = colorIndex

@@ -20,10 +20,7 @@ private val boardTable_ = FC<BoardProps>("Board") { props ->
                     ReactHTML.td {
                         ReactHTML.button {
                             onClick = { props.chooseTile(rowI, columnI) }
-                            drawTile {
-                                tile = cell
-                                colors = props.colors
-                            }
+                            tileDraw(cell, props.colors)
                             if (props.fox != null && props.fox!!.position.row == rowI && props.fox!!.position.column == columnI) {
                                 ReactHTML.span {
                                     +"🦊"
