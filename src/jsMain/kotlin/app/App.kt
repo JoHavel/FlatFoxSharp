@@ -20,28 +20,22 @@ val DEFAULT_BOARD = listOf(
     listOf(Arrow(null, Direction.UP), Dec(0), Arrow(null, Direction.LEFT)),
 )
 
-fun <T : Any, S : T?> useStateSetRef(default: S): Triple<StateInstance<S>, StateSetter<S>, RefObject<T>> {
+fun <T : Any, S : T?> useValueSetRef(default: S): Triple<S, StateSetter<S>, RefObject<T>> {
     val state = useState(default)
     val (value, setter) = state
     val ref = useRef<T>(null)
     ref.current = value
-    return Triple(state, setter, ref)
+    return Triple(value, setter, ref)
 }
 
 val App = FC<Props> {
-    val (colorState, setColors, colorsRef) = useStateSetRef(DEFAULT_COLORS)
-    val (boardState, setBoard, boardRef) = useStateSetRef(DEFAULT_BOARD)
-    val (blackState, setBlack, blackRef) = useStateSetRef(0L)
-    val (foxState, setFox, foxRef) = useStateSetRef<Fox, Fox?>(null)
-    val (inputState, setInput, inputRef) = useStateSetRef("")
+    val (colors, setColors, colorsRef) = useValueSetRef(DEFAULT_COLORS)
+    val (board, setBoard, boardRef) = useValueSetRef(DEFAULT_BOARD)
+    val (black, setBlack, blackRef) = useValueSetRef(0L)
+    val (fox, setFox, foxRef) = useValueSetRef<Fox, Fox?>(null)
+    val (input, setInput, inputRef) = useValueSetRef("")
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
-
-    val colors by colorState
-    val board by boardState
-    val black by blackState
-    val fox by foxState
-    val input by inputState
 
     val (chosenTile, setChosenTile) = useState(Hack<() -> Tile> { Empty() })
 
@@ -107,7 +101,7 @@ val App = FC<Props> {
             +"výstup:"
             ReactHTML.textarea {
                 disabled = true
-                value = fox!!.output
+                value = fox.output
             }
         }
     }
