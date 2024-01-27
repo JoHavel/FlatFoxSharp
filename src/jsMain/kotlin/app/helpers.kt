@@ -12,7 +12,6 @@ fun <T> List<List<T>>.mapOne(rowIndex: Int, columnIndex: Int, what: (T) -> T): L
 }
 
 data class Hack<T>(val hack: T)
-typealias DiscardingFunction = Hack<(Any?) -> Unit>
 
 val <T> StateSetter<T>.hack
     get() = Hack { it: T -> this(it) }

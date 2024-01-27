@@ -37,11 +37,11 @@ val App = FC<Props> {
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
 
-    var colors by colorState
-    var board by boardState
-    var black by blackState
-    var fox by foxState
-    var input by inputState
+    val colors by colorState
+    val board by boardState
+    val black by blackState
+    val fox by foxState
+    val input by inputState
 
     val (chosenTile, setChosenTile) = useState(Hack<() -> Tile> { Empty() })
 
@@ -66,36 +66,33 @@ val App = FC<Props> {
         }
     }
 
-    drawMenu {
-        newRow = DiscardingFunction { board = board + listOf(List(board[0].size) { Empty() }) }
-        newColumn = DiscardingFunction { board = board.map { row -> row + Empty() } }
-        newColor = DiscardingFunction { colors = colors + Color(getDefaultColorName(colors.size)) }
-        step = DiscardingFunction { state.go(board) }
-        start = DiscardingFunction {
+    menu(
+        newRow = { setBoard(Board::withNewRow) },
+        newColumn = { setBoard(Board::withNewColumn) },
+        newColor = { setColors(colors + Color(getDefaultColorName(colors.size))) },
+        start = {
             for (row in board.indices)
                 for (column in board[row].indices)
                     if (board[row][column] == Start)
-                        fox = getFox(Position(row, column) + Direction.RIGHT)
+                        setFox(getFox(Position(row, column) + Direction.RIGHT))
             state.save()
-        }
-        reset = DiscardingFunction {
-            fox = null
+        },
+        step = { state.go(board) },
+        reset = {
+            setFox(null)
             state.load()
             resetTimer()
-        }
-        stop = DiscardingFunction {
-            resetTimer()
-        }
-        autoRun = DiscardingFunction {
+        },
+        stop = { resetTimer() },
+        autoRun = {
             setTimerID(window.setInterval({
                 val next = state.go(boardRef.current!!)
                 if (!next) resetTimer()
             }, 1))
-        }
+        },
 
-        foxOut = fox != null
-        autoRunning = timerID != null
-    }
+        foxOut = fox != null, autoRunning = timerID != null,
+    )
 
     if (full) {
         +"Vstup:"
@@ -103,12 +100,7 @@ val App = FC<Props> {
 //        css { width = 10.em; height = 5.em; resize = Resize.both }
 //        type = InputType.text
             value = input
-            onInput = {
-                try {
-                    input = it.target.asDynamic().value.toString()
-                } catch (_: Exception) {
-                }
-            }
+            onInput = { setInput(it.target.asDynamic().value.toString()) }
         }
 
         if (fox != null) {
@@ -124,13 +116,13 @@ val App = FC<Props> {
 
     boardTable(colors, board, fox) { rowI, columnI ->
         val tile = chosenTile.hack()
-        board = board.mapOne(rowI, columnI) { tile }
+        setBoard(board.mapOne(rowI, columnI) { tile })
     }
 
     picker(
         setChosenTile,
-        Hack { colorIndex, value -> colors = colors.assign(colorIndex, value) },
-        Hack { colorIndex, name -> colors = colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) } },
+        Hack { colorIndex, value -> setColors(colors.assign(colorIndex, value)) },
+        Hack { colorIndex, name -> setColors(colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) }) },
         colors, black, setBlack,
         full,
     )
