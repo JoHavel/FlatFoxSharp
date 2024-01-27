@@ -1,6 +1,6 @@
 package file
 
-import app.Board
+import logic.Board
 import js.array.JsTuple4
 import js.array.tupleOf
 import logic.*

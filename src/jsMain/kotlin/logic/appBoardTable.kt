@@ -1,22 +1,18 @@
-package app
+package logic
 
-import logic.Colors
-import logic.Fox
-import logic.Tile
-import logic.drawTile
-import react.*
+import react.ChildrenBuilder
+import react.FC
+import react.Props
 import react.dom.html.ReactHTML
 
-typealias Board = List<List<Tile>>
-
-external interface BoardProps : Props {
+private external interface BoardProps : Props {
+    var colors: Colors
     var board: Board
     var fox: Fox?
     var chooseTile: (Int, Int) -> Unit
-    var colors: Colors
 }
 
-val drawBoard = FC<BoardProps>("Board") { props ->
+private val boardTable_ = FC<BoardProps>("Board") { props ->
     ReactHTML.table {
         props.board.forEachIndexed { rowI, row ->
             ReactHTML.tr {
@@ -41,3 +37,9 @@ val drawBoard = FC<BoardProps>("Board") { props ->
     }
 }
 
+fun ChildrenBuilder.boardTable(colors: Colors, board: Board, fox: Fox?, chooseTile: (Int, Int) -> Unit) = boardTable_ {
+    this.colors = colors
+    this.board = board
+    this.fox = fox
+    this.chooseTile = chooseTile
+}

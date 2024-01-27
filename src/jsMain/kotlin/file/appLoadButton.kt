@@ -10,7 +10,7 @@ import web.cssom.*
 import web.file.FileReader
 import web.html.InputType
 
-import app.Board
+import logic.Board
 import app.Hack
 import app.hack
 import logic.Colors

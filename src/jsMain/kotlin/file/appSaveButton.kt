@@ -9,7 +9,7 @@ import org.w3c.dom.url.URL
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 
-import app.Board
+import logic.Board
 import logic.Colors
 
 private external interface SaveProps : Props {

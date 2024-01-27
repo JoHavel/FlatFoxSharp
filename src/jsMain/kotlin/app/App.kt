@@ -43,7 +43,7 @@ val App = FC<Props> {
     var fox by foxState
     var input by inputState
 
-    var chosenTile by useState(Hack<() -> Tile> { Empty() })
+    val (chosenTile, setChosenTile) = useState(Hack<() -> Tile> { Empty() })
 
     val (timerID, setTimerID) = useState<Int?>(null)
     fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
@@ -122,27 +122,16 @@ val App = FC<Props> {
 
     ReactHTML.br()
 
-    drawBoard {
-        this.board = board
-        this.fox = fox
-        this.chooseTile = { rowI, columnI ->
-            val tile = chosenTile.hack()
-            board = board.mapOne(rowI, columnI) { tile }
-        }
-        this.colors = colors
+    boardTable(colors, board, fox) { rowI, columnI ->
+        val tile = chosenTile.hack()
+        board = board.mapOne(rowI, columnI) { tile }
     }
 
-    drawPicker {
-        this.chooseTile = Hack { chosenTile = Hack(it) }
-        setColor = Hack { colorIndex, value ->
-            colors = colors.assign(colorIndex, value)
-        }
-        setColorName = Hack { colorIndex, name ->
-            colors = colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) }
-        }
-        this.colors = colors
-        this.full = full
-        this.black = black
-        this.setBlack = Hack { black = it }
-    }
+    picker(
+        setChosenTile,
+        Hack { colorIndex, value -> colors = colors.assign(colorIndex, value) },
+        Hack { colorIndex, name -> colors = colors.mapOne(colorIndex) { Color(name, it.value, it.lastValue) } },
+        colors, black, setBlack,
+        full,
+    )
 }

@@ -1,29 +1,27 @@
 package app
 
-import logic.*
-import react.ChildrenBuilder
-import react.FC
-import react.Props
+import react.*
 import react.dom.html.ReactHTML
-import react.useState
 import web.html.InputType
+
+import logic.*
 
 //                            for (row in board.indices)
 //                                for (column in board[row].indices)
 //                                    if (board[row][column] == Start)
 //                                        board = board.mapOne(row, column) { Empty() }
 
-external interface PickerProps : Props {
-    var chooseTile: Hack<(() -> Tile) -> Unit>
+private external interface PickerProps : Props {
+    var chooseTile: Hack<(Hack<() -> Tile>) -> Unit>
     var setColor: Hack<(Int, Long) -> Unit>
     var setColorName: Hack<(Int, String) -> Unit>
     var colors: Colors
-    var full: Boolean
     var black: Long
     var setBlack: Hack<(Long) -> Unit>
+    var full: Boolean
 }
 
-val tiles = listOf<(Int?, Long, Position) -> Tile>(
+private val tiles = listOf<(Int?, Long, Position) -> Tile>(
     { colorIndex, _, _ -> if (colorIndex == null) Start else Inc(colorIndex) },
     { colorIndex, _, _ -> if (colorIndex == null) End() else Dec(colorIndex) },
 ) + enumValues<Direction>().map { direction ->
@@ -40,7 +38,7 @@ val tiles = listOf<(Int?, Long, Position) -> Tile>(
     { colorIndex, _, _ -> if (colorIndex == null) Empty() else Output(colorIndex) },
 )
 
-val drawPicker = FC<PickerProps> { props ->
+private val picker_ = FC<PickerProps> { props ->
     fun ChildrenBuilder.drawTile(tile: Tile) {
         drawTile { this.tile = tile; colors = props.colors }
     }
@@ -49,7 +47,7 @@ val drawPicker = FC<PickerProps> { props ->
     var tileIndex by useState(-1)
 
     fun reset() {
-        props.chooseTile.hack { Empty() }
+        props.chooseTile.hack(Hack { Empty() })
         color = -1
         tileIndex = -1
     }
@@ -171,7 +169,7 @@ val drawPicker = FC<PickerProps> { props ->
                                     onClick = {
                                         tileIndex = tileI
                                         color = -1
-                                        props.chooseTile.hack { tileGenerator(null, constValue, jumpPosition) }
+                                        props.chooseTile.hack(Hack { tileGenerator(null, constValue, jumpPosition) })
                                     }
                                 }
                             }
@@ -186,7 +184,7 @@ val drawPicker = FC<PickerProps> { props ->
                                 onClick = {
                                     tileIndex = tileI
                                     color = colorIndex
-                                    props.chooseTile.hack { tileGenerator(colorIndex, constValue, jumpPosition) }
+                                    props.chooseTile.hack(Hack { tileGenerator(colorIndex, constValue, jumpPosition) })
                                 }
                             }
                         }
@@ -196,3 +194,39 @@ val drawPicker = FC<PickerProps> { props ->
         }
     }
 }
+
+fun ChildrenBuilder.picker(
+    chooseTile: Hack<(Hack<() -> Tile>) -> Unit>,
+    setColor: Hack<(Int, Long) -> Unit>,
+    setColorName: Hack<(Int, String) -> Unit>,
+    colors: Colors,
+    black: Long,
+    setBlack: Hack<(Long) -> Unit>,
+    full: Boolean,
+) = picker_ {
+    this.chooseTile = chooseTile
+    this.setColor = setColor
+    this.setColorName = setColorName
+    this.colors = colors
+    this.black = black
+    this.setBlack = setBlack
+    this.full = full
+}
+
+fun ChildrenBuilder.picker(
+    chooseTile: StateSetter<Hack<() -> Tile>>,
+    setColor: Hack<(Int, Long) -> Unit>,
+    setColorName: Hack<(Int, String) -> Unit>,
+    colors: Colors,
+    black: Long,
+    setBlack: StateSetter<Long>,
+    full: Boolean,
+) = picker(
+    chooseTile.hack,
+    setColor,
+    setColorName,
+    colors,
+    black,
+    setBlack.hack,
+    full,
+)

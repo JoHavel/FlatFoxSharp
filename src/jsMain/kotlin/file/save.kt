@@ -1,6 +1,6 @@
 package file
 
-import app.Board
+import logic.Board
 import logic.Colors
 
 fun save(

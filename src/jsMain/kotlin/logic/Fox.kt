@@ -1,7 +1,5 @@
 package logic
 
-import app.Board
-
 fun getFox(position: Position): Fox = Fox(position, Direction.RIGHT)
 
 class Fox(val position: Position, private val direction: Direction, val output: String = "", val inputIndex: Int = 0) {
