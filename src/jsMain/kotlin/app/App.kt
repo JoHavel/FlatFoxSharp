@@ -1,16 +1,21 @@
 package app
 
+import emotion.react.css
 import file.ParseException
 import file.load
 import file.save
 import kotlinx.browser.window
 import logic.*
+import logic.Color
+import logic.Direction
+import logic.Position
 import react.*
 import react.dom.html.ReactHTML
 import web.html.InputType
 import org.w3c.dom.url.URL
 import org.w3c.files.FilePropertyBag
 import org.w3c.files.File
+import web.cssom.*
 import web.file.FileReader
 
 val App = FC<Props> {
@@ -65,33 +70,48 @@ val App = FC<Props> {
 
     val state = ReactProgramState(colorsRef, setColors, foxRef, setFox, blackRef, setBlack, inputRef)
 
-    ReactHTML.button {
-        onClick = {
-            val file = save(colors, board, black, input)
-            val blob = File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "text/ffs"))
-            val url = URL.createObjectURL(blob)
-            window.setTimeout({ URL.revokeObjectURL(url) }, 60000)
-            window.open(url)
+    ReactHTML.div {
+        ReactHTML.button {
+            +"Uložit"
+            onClick = {
+                val file = save(colors, board, black, input)
+                val blob = File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "text/ffs"))
+                val url = URL.createObjectURL(blob)
+                window.setTimeout({ URL.revokeObjectURL(url) }, 60000)
+                window.open(url)
+            }
         }
-    }
-
-    ReactHTML.input {
-        type = InputType.file
-        onChange = {
-            val reader = FileReader()
-            reader.onload = { event ->
-                println(event.target)
-                try {
-                    val (newColors, newBoard, newBlack, newInput) = load(reader.result as String)
-                    colors = newColors
-                    board = newBoard
-                    black = newBlack
-                    input = newInput
-                } catch (_: ParseException) {
+        +" "
+        ReactHTML.span {
+            css {
+                border = Border(2.pt, LineStyle.solid, web.cssom.Color("lightgray"))
+                padding = 5.pt
+            }
+            ReactHTML.label {
+                css { fontWeight = FontWeight.bold }
+                +"Načíst:"
+            }
+            +" "
+            ReactHTML.input {
+                type = InputType.file
+                css { width = Length.fitContent }
+                onChange = {
+                    val reader = FileReader()
+                    reader.onload = { event ->
+                        println(event.target)
+                        try {
+                            val (newColors, newBoard, newBlack, newInput) = load(reader.result as String)
+                            colors = newColors
+                            board = newBoard
+                            black = newBlack
+                            input = newInput
+                        } catch (_: ParseException) {
+                        }
+                    }
+                    if (it.target.files != null)
+                        reader.readAsText(it.target.files!![0])
                 }
             }
-            if (it.target.files != null)
-                reader.readAsText(it.target.files!![0])
         }
     }
 
