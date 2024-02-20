@@ -57,8 +57,8 @@ fun load(file: String): JsTuple4<Colors, Board, Long, String> {
                         if (splitted.size != 2) throw ParseException()
                         return@map Jump(
                             Position(
-                                splitted[0].toIntOrNull() ?: throw ParseException(),
-                                splitted[1].toIntOrNull() ?: throw ParseException()
+                                (splitted[0].toIntOrNull() ?: throw ParseException()) - 1,
+                                (splitted[1].toIntOrNull() ?: throw ParseException()) - 1
                             )
                         )
                     }
