@@ -25,7 +25,7 @@ private val saveButton_ = FC<SaveProps> { props ->
         onClick = {
             val file = save(props.colors, props.board, props.black, props.input)
             val blob =
-                File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "text/ffs"))
+                File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "application/ffs"))
             val url = URL.createObjectURL(blob)
             window.setTimeout({ URL.revokeObjectURL(url) }, 60000)
             window.open(url)
