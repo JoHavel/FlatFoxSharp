@@ -1,5 +1,6 @@
 package file
 
+import kotlinx.browser.document
 import kotlinx.browser.window
 import react.ChildrenBuilder
 import react.FC
@@ -28,7 +29,12 @@ private val saveButton_ = FC<SaveProps> { props ->
                 File(arrayOf(file), "program.ffs", FilePropertyBag(undefined, "application/ffs"))
             val url = URL.createObjectURL(blob)
             window.setTimeout({ URL.revokeObjectURL(url) }, 60000)
-            window.open(url)
+//            window.open(url)
+            val element = document.createElement("a")
+            element.setAttribute("href", url)
+            element.setAttribute("download", "program.ffs")
+            element.asDynamic().click()
+            element.remove()
         }
     }
 }
