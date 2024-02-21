@@ -1,5 +1,6 @@
 package app
 
+import emotion.react.css
 import function
 import react.*
 import react.dom.html.ReactHTML
@@ -91,6 +92,7 @@ private val picker_ = FC<PickerProps> { props ->
                 props.colors.forEachIndexed { index, color ->
                     ReactHTML.td {
                         ReactHTML.input {
+                            css { this.color = web.cssom.Color(color.color) }
                             type = InputType.number
                             value = color.value.toString()
                             onInput = {
