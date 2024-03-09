@@ -1,5 +1,6 @@
 package app
 
+import file.load
 import kotlinx.browser.window
 import react.*
 import react.dom.html.ReactHTML
@@ -11,6 +12,7 @@ import file.loadButton
 import file.saveButton
 import mapOne
 import web.cssom.ClassName
+import web.http.fetchAsync
 
 
 val DEFAULT_COLORS = listOf(Color(COLOR_NAMES[0], 2L), Color(COLOR_NAMES[1], 0L), Color(COLOR_NAMES[2]))
@@ -44,6 +46,35 @@ val App = FC<Props> {
     fun resetTimer() = setTimerID { if (it != null) window.clearTimeout(it); null }
 
     var full by useState(false)
+
+    useEffectOnce {
+        window.onhashchange = {
+            window.location.reload()
+        }
+        val hash = window.location.hash.drop(1)
+        try {
+            val promise = fetchAsync(hash)
+            promise.then {
+                try {
+                    it.text().then { file ->
+                        try {
+                            val (newColors, newBoard, newBlack, newInput) = load(file)
+                            setColors(newColors)
+                            setBoard(newBoard)
+                            setBlack(newBlack)
+                            setInput(newInput)
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
+                    }
+                } catch (e: Exception) {
+                    println(e.message)
+                }
+            }
+        } catch (e: Exception) {
+            println(e.message)
+        }
+    }
 
     ReactHTML.div {
         className = ClassName("menu")
